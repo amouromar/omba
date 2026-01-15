@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+cars.md
 
 # debug
 npm-debug.log*
