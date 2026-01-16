@@ -2,24 +2,46 @@
 
 import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, Search } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+
+interface Location {
+  id: string;
+  name: string;
+  city: string;
+  type: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 const QuickSearch = () => {
-  const [pickUpDate, setPickUpDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
+  const [pickUpDate, setPickUpDate] = useState(
+    () => new Date().toISOString().split("T")[0]
+  );
+  const [returnDate, setReturnDate] = useState(
+    () => new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0]
+  );
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Setting dates in useEffect avoids hydration mismatch and impure function warnings during render
-    const today = new Date().toISOString().split("T")[0];
-    const future = new Date(Date.now() + 86400000 * 3)
-      .toISOString()
-      .split("T")[0];
+    const fetchData = async () => {
+      setLoading(true);
+      const [locRes, catRes] = await Promise.all([
+        supabase.from("locations").select("*").order("name"),
+        supabase.from("categories").select("*").order("name"),
+      ]);
 
-    // Using a microtask to avoid the "cascading render" lint warning if needed,
-    // although standard useEffect setState is generally acceptable for hydration.
-    Promise.resolve().then(() => {
-      setPickUpDate(today);
-      setReturnDate(future);
-    });
+      if (locRes.data) setLocations(locRes.data);
+      if (catRes.data) setCategories(catRes.data);
+      setLoading(false);
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -33,11 +55,40 @@ const QuickSearch = () => {
               Pick-up Location
             </label>
             <div className="relative">
-              <select className="w-full bg-neutral-surface border border-neutral-border rounded-xl px-4 py-3 text-neutral-text-primary font-medium focus:ring-2 focus:ring-secondary-main outline-none appearance-none transition-all">
-                <option>Dar es Salaam City Center</option>
-                <option>JK Terminal 3 Airport</option>
-                <option>Zanzibar Airport (ZNZ)</option>
-                <option>Arusha (Kilimanjaro Int.)</option>
+              <select className="w-full bg-neutral-surface border border-neutral-border rounded-xl px-4 py-3 text-neutral-text-primary font-medium focus:ring-2 focus:ring-secondary-main outline-none appearance-none transition-all disabled:opacity-50">
+                {loading ? (
+                  <option>Loading locations...</option>
+                ) : (
+                  <>
+                    <optgroup label="Airports">
+                      {locations
+                        .filter((loc) => loc.type === "airport")
+                        .map((loc) => (
+                          <option key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </option>
+                        ))}
+                    </optgroup>
+                    <optgroup label="Bus Stations">
+                      {locations
+                        .filter((loc) => loc.type === "bus_station")
+                        .map((loc) => (
+                          <option key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </option>
+                        ))}
+                    </optgroup>
+                    <optgroup label="Train Stations">
+                      {locations
+                        .filter((loc) => loc.type === "train_station")
+                        .map((loc) => (
+                          <option key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </option>
+                        ))}
+                    </optgroup>
+                  </>
+                )}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none border-l pl-4 border-neutral-border">
                 <div className="border-t-4 border-l-4 border-transparent border-t-neutral-text-secondary transform -rotate-45" />
@@ -84,15 +135,29 @@ const QuickSearch = () => {
           <span className="text-xs font-bold text-neutral-text-disabled uppercase tracking-widest whitespace-nowrap">
             Quick Select:
           </span>
-          {["Economy", "Luxury", "SUV/4x4", "Manual", "Automatic"].map(
-            (tag) => (
+          {loading ? (
+            <span className="text-xs text-neutral-text-disabled animated-pulse">
+              Loading categories...
+            </span>
+          ) : (
+            categories.map((cat) => (
               <button
-                key={tag}
+                key={cat.id}
                 className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap"
               >
-                {tag}
+                {cat.name}
               </button>
-            )
+            ))
+          )}
+          {!loading && (
+            <>
+              <button className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap">
+                Manual
+              </button>
+              <button className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap">
+                Automatic
+              </button>
+            </>
           )}
         </div>
       </div>

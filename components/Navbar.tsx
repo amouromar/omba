@@ -76,7 +76,7 @@ const Navbar = () => {
                 className={`text-sm font-medium transition-colors hover:text-secondary-main ${
                   scrolled
                     ? "text-neutral-text-primary dark:text-white/90"
-                    : "text-white/90"
+                    : "text-white/90 dark:text-primary-main"
                 }`}
               >
                 {link.name}
@@ -91,7 +91,7 @@ const Navbar = () => {
               className={`flex items-center gap-2 text-sm font-semibold transition-colors ${
                 scrolled
                   ? "text-neutral-text-primary dark:text-white"
-                  : "text-white"
+                  : "text-white dark:text-primary-main"
               }`}
             >
               <Phone size={16} className="text-secondary-main" />
@@ -99,10 +99,10 @@ const Navbar = () => {
             </Link>
             <Link
               href="/login"
-              className={`p-2 rounded-full border transition-colors hover:bg-secondary-main hover:border-secondary-main ${
+              className={`p-2 rounded-full border transition-colors hover:border-primary-main ${
                 scrolled
-                  ? "border-primary-main text-primary-main dark:border-white/20 dark:text-white"
-                  : "border-white/20 text-white"
+                  ? "border-primary-main dark:border-neutral-border text-primary-main dark:text-white"
+                  : "border-white/20 dark:border-neutral-border text-white dark:text-primary-main"
               }`}
             >
               <User size={20} />

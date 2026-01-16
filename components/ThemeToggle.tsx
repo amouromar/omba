@@ -29,16 +29,16 @@ export function ThemeToggle() {
         <Sun
           className={`absolute inset-0 transition-all duration-500 transform ${
             theme === "dark"
-              ? "rotate-90 scale-0 opacity-0"
-              : "rotate-0 scale-100 opacity-100"
+              ? "rotate-0 scale-100 opacity-100"
+              : "rotate-90 scale-0 opacity-0"
           }`}
           size={20}
         />
         <Moon
           className={`absolute inset-0 transition-all duration-500 transform ${
             theme === "dark"
-              ? "rotate-0 scale-100 opacity-100"
-              : "-rotate-90 scale-0 opacity-0"
+              ? "-rotate-90 scale-0 opacity-0"
+              : "rotate-0 scale-100 opacity-100"
           }`}
           size={20}
         />

@@ -10,4 +10,7 @@ generator client {
 model Car {
   id    String @id @default(cuid())
   name  String
+  
+  description String?
+  features    String[] @default([])
 }
