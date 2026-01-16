@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Maximize2 } from "lucide-react";
 
@@ -18,13 +18,12 @@ interface CarGalleryProps {
 
 const CarGallery: React.FC<CarGalleryProps> = ({ images, make, model }) => {
   const [activeImage, setActiveImage] = useState<CarImage | null>(null);
+  const [prevImages, setPrevImages] = useState(images);
 
-  useEffect(() => {
-    if (images && images.length > 0) {
-      const primary = images.find((img) => img.is_primary) || images[0];
-      setActiveImage(primary);
-    }
-  }, [images]);
+  if (images !== prevImages) {
+    setPrevImages(images);
+    setActiveImage(null);
+  }
 
   // Ensure we always have a valid image to show if possible
   const displayImage =

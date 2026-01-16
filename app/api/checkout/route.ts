@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   apiVersion: "2025-12-15.clover" as any, // Suppressing type check for specific version to avoid build errors
 });
 
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
       ],
       mode: "payment",
       success_url: `${request.headers.get(
-        "origin"
+        "origin",
       )}/bookings/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.headers.get("origin")}/cars/${carId}`, // specific cancel page or back to car
       metadata: {
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
       await stripe.checkout.sessions.expire(session.id);
       return NextResponse.json(
         { error: "Failed to create booking record." },
-        { status: 500 }
+        { status: 500 },
       );
     }
 

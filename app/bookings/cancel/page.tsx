@@ -3,12 +3,10 @@
 import React from "react";
 import { XCircle } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 const BookingCancelPage = () => {
   // We could use searchParams to get bookingId if we tracked it,
   // but typically we just redirect user back.
-  const searchParams = useSearchParams();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-surface px-4">

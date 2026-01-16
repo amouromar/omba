@@ -77,7 +77,7 @@ export default function CarsPage() {
     // Apply filters
     if (filters.search) {
       query = query.or(
-        `make.ilike.%${filters.search}%,model.ilike.%${filters.search}%`
+        `make.ilike.%${filters.search}%,model.ilike.%${filters.search}%`,
       );
     }
     if (filters.category) {
@@ -157,14 +157,12 @@ export default function CarsPage() {
   const handleReport = (id: string) => {
     // In a real app, this would open a modal or send an API request
     alert(
-      `Vehicle ${id} has been reported. Our team will review it. Thank you!`
+      `Vehicle ${id} has been reported. Our team will review it. Thank you!`,
     );
   };
 
   return (
     <div className="min-h-screen bg-neutral-surface dark:bg-neutral-surface">
-      
-
       <main className="pt-32 pb-24">
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex flex-col lg:flex-row gap-8">

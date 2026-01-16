@@ -19,10 +19,10 @@ interface Category {
 
 const QuickSearch = () => {
   const [pickUpDate, setPickUpDate] = useState(
-    () => new Date().toISOString().split("T")[0]
+    () => new Date().toISOString().split("T")[0],
   );
   const [returnDate, setReturnDate] = useState(
-    () => new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0]
+    () => new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0],
   );
   const [locations, setLocations] = useState<Location[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);

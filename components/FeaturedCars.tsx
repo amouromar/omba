@@ -40,7 +40,7 @@ const FeaturedCars = () => {
           *,
           categories(name),
           car_images(*)
-        `
+        `,
         )
         .eq("is_available", true)
         .order("created_at", { ascending: false })
@@ -106,8 +106,8 @@ const FeaturedCars = () => {
                 car.price_per_day < 60
                   ? "Saver"
                   : car.price_per_day > 200
-                  ? "Elite"
-                  : "Popular";
+                    ? "Elite"
+                    : "Popular";
 
               return (
                 <div

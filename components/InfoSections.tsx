@@ -117,12 +117,11 @@ const InfoSections = () => {
                 className="relative z-10 flex flex-col items-center text-center group"
               >
                 <div className="w-20 h-20 bg-white dark:bg-neutral-surface border-2 border-neutral-border rounded-full flex items-center justify-center text-primary-main group-hover:border-primary-main group-hover:text-primary-main transition-all mb-6 relative">
-                 
                   {React.cloneElement(
                     item.icon as React.ReactElement<{ size: number }>,
                     {
                       size: 32,
-                    }
+                    },
                   )}
                 </div>
                 <h3 className="text-xl font-bold text-primary-main mb-3">
@@ -201,7 +200,10 @@ const InfoSections = () => {
       </section>
 
       {/* Locations */}
-      <section id="locations" className="py-24 bg-white dark:bg-neutral-surface">
+      <section
+        id="locations"
+        className="py-24 bg-white dark:bg-neutral-surface"
+      >
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>

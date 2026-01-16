@@ -112,7 +112,7 @@ export default function PhotoManager({
 
       setUploading(null);
     },
-    [carId, refreshImages, images]
+    [carId, refreshImages, images],
   );
 
   const handleDelete = useCallback(
@@ -138,7 +138,7 @@ export default function PhotoManager({
 
       refreshImages();
     },
-    [refreshImages]
+    [refreshImages],
   );
 
   if (loading && images.length === 0) {

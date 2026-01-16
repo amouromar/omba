@@ -43,8 +43,8 @@ const CarCard: React.FC<CarCardProps> = ({
     car.price_per_day < 60
       ? "Saver"
       : car.price_per_day > 200
-      ? "Elite"
-      : "Popular";
+        ? "Elite"
+        : "Popular";
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-TZ", {

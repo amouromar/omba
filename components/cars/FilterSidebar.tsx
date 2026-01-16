@@ -19,7 +19,7 @@ interface FilterSidebarProps {
       maxPrice: string;
       transmission: string | null;
       fuelType: string | null;
-    }>
+    }>,
   ) => void;
   onClear: () => void;
   isOpen?: boolean;

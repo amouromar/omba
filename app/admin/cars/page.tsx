@@ -9,7 +9,7 @@ export default async function AdminCarsPage() {
       `
       *,
       categories (name)
-    `
+    `,
     )
     .order("created_at", { ascending: false });
 

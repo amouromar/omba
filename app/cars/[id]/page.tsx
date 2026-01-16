@@ -65,7 +65,7 @@ const CarDetailsPage = () => {
           *,
           categories(name),
           car_images(*)
-        `
+        `,
         )
         .eq("id", id)
         .single();
@@ -84,7 +84,7 @@ const CarDetailsPage = () => {
       ([entry]) => {
         setIsSidebarVisible(entry.isIntersecting);
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sidebarRef.current) {

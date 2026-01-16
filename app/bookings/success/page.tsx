@@ -3,11 +3,9 @@
 import React, { useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 
 const BookingSuccessPage = () => {
-  const searchParams = useSearchParams();
   // const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
@@ -19,7 +17,7 @@ const BookingSuccessPage = () => {
     const randomInRange = (min: number, max: number) =>
       Math.random() * (max - min) + min;
 
-    const interval: any = setInterval(function () {
+    const interval: NodeJS.Timeout = setInterval(function () {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {

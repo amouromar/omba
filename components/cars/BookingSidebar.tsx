@@ -240,7 +240,7 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
       </button>
 
       <p className="text-center text-xs text-neutral-text-disabled mt-4 font-medium">
-        You won't be charged yet
+        You won&apos;t be charged yet
       </p>
 
       <div className="space-y-3 mt-6">
