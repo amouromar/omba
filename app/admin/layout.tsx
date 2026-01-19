@@ -1,10 +1,20 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { isAdmin, getUserProfile } from "@/lib/users";
+import { UserButton } from "@clerk/nextjs";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const isUserAdmin = await isAdmin();
+  const profile = await getUserProfile();
+
+  if (!isUserAdmin) {
+    redirect("/");
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <nav className="border-b bg-muted/40 px-6 py-4">
@@ -32,11 +42,22 @@ export default function AdminLayout({
               >
                 Bookings
               </Link>
+              <Link
+                href="/admin/users"
+                className="hover:text-primary transition-colors"
+              >
+                Users
+              </Link>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-muted-foreground">Admin User</span>
-            <div className="h-2 w-2 rounded-full bg-green-500"></div>
+          <div className="flex items-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground font-medium">
+                {profile?.full_name || "Admin"}
+              </span>
+              <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+            </div>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </nav>

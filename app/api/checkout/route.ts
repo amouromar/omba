@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { isVerified } from "@/lib/users";
+import { auth } from "@clerk/nextjs/server";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -18,6 +20,22 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const verified = await isVerified();
+    if (!verified) {
+      return NextResponse.json(
+        {
+          error:
+            "Account not verified. Please complete your profile and wait for admin approval.",
+        },
+        { status: 403 },
+      );
+    }
+
     const body = await request.json();
     const {
       carId,
@@ -64,12 +82,12 @@ export async function POST(request: Request) {
     const { error } = await supabase.from("bookings").insert([
       {
         car_id: carId,
+        user_id: userId, // Added clerk_id/user_id for tracking
         start_date: startDate,
         end_date: endDate,
         total_price: totalAmount,
         status: "PENDING",
         stripe_session_id: session.id,
-        // Optional: customer info if passed
       },
     ]);
 

@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Phone, User } from "lucide-react";
+import { Menu, X, Phone, User, LayoutDashboard } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -97,16 +98,43 @@ const Navbar = () => {
               <Phone size={16} className="text-secondary-main" />
               <span>+255 700 000 000</span>
             </Link>
-            <Link
-              href="/login"
-              className={`p-2 rounded-full border transition-colors hover:border-primary-main ${
-                scrolled
-                  ? "border-primary-main dark:border-neutral-border text-primary-main dark:text-white"
-                  : "border-white/20 dark:border-neutral-border text-white dark:text-primary-main"
-              }`}
-            >
-              <User size={20} />
-            </Link>
+
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button
+                  className={`p-2 rounded-full border transition-colors hover:border-primary-main ${
+                    scrolled
+                      ? "border-primary-main dark:border-neutral-border text-primary-main dark:text-white"
+                      : "border-white/20 dark:border-neutral-border text-white dark:text-primary-main"
+                  }`}
+                >
+                  <User size={20} />
+                </button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <Link
+                href="/dashboard"
+                className={`p-2 rounded-full border transition-colors hover:border-primary-main ${
+                  scrolled
+                    ? "border-primary-main dark:border-neutral-border text-primary-main dark:text-white"
+                    : "border-white/20 dark:border-neutral-border text-white dark:text-primary-main"
+                }`}
+                title="Dashboard"
+              >
+                <LayoutDashboard size={20} />
+              </Link>
+              <UserButton
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-10 h-10",
+                  },
+                }}
+              />
+            </SignedIn>
+
             <ThemeToggle />
             <Link
               href="/cars"
@@ -160,6 +188,26 @@ const Navbar = () => {
           >
             Find Your Car
           </Link>
+
+          <div className="flex flex-col w-full max-w-xs gap-4">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="w-full py-3 rounded-xl border border-white/20 text-white font-semibold">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <Link
+                href="/dashboard"
+                onClick={() => setIsOpen(false)}
+                className="w-full py-3 rounded-xl border border-white/20 text-white font-semibold flex items-center justify-center gap-2"
+              >
+                <LayoutDashboard size={18} />
+                Dashboard
+              </Link>
+            </SignedIn>
+          </div>
 
           <div className="flex items-center gap-6">
             <ThemeToggle />

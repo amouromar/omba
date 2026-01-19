@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  Suspense,
+  useMemo,
+} from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Footer from "@/components/Footer";
 import CarCard from "@/components/cars/CarCard";
@@ -17,6 +24,7 @@ interface Car {
   fuel_type: string;
   seats: number;
   price_per_day: number;
+  location?: string;
   categories: {
     name: string;
   };
@@ -33,21 +41,35 @@ interface Category {
   slug: string;
 }
 
+interface Location {
+  id: string;
+  name: string;
+  type: string;
+}
+
 interface FilterState {
   search: string;
   category: string | null;
+  location: string;
   minPrice: string;
   maxPrice: string;
   transmission: string | null;
   fuelType: string | null;
+  seats: string | null;
+  startDate: string;
+  endDate: string;
   sort: string;
 }
 
-export default function CarsPage() {
+function CarsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [cars, setCars] = useState<Car[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   const [savedCars, setSavedCars] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("omba_saved_cars");
@@ -56,16 +78,23 @@ export default function CarsPage() {
     return [];
   });
 
-  // Filter States
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    category: null,
-    minPrice: "",
-    maxPrice: "",
-    transmission: null,
-    fuelType: null,
-    sort: "newest",
-  });
+  // Derived Filter State (URL is source of truth)
+  const filters = useMemo<FilterState>(
+    () => ({
+      search: searchParams.get("search") || "",
+      category: searchParams.get("category") || null,
+      location: searchParams.get("location") || "",
+      minPrice: searchParams.get("minPrice") || "",
+      maxPrice: searchParams.get("maxPrice") || "",
+      transmission: searchParams.get("transmission") || null,
+      fuelType: searchParams.get("fuelType") || null,
+      seats: searchParams.get("seats") || null,
+      startDate: searchParams.get("startDate") || "",
+      endDate: searchParams.get("endDate") || "",
+      sort: searchParams.get("sort") || "newest",
+    }),
+    [searchParams]
+  );
 
   const fetchCars = useCallback(async () => {
     setLoading(true);
@@ -77,11 +106,14 @@ export default function CarsPage() {
     // Apply filters
     if (filters.search) {
       query = query.or(
-        `make.ilike.%${filters.search}%,model.ilike.%${filters.search}%`,
+        `make.ilike.%${filters.search}%,model.ilike.%${filters.search}%`
       );
     }
     if (filters.category) {
       query = query.eq("category_id", filters.category);
+    }
+    if (filters.location) {
+      query = query.ilike("location", `%${filters.location}%`);
     }
     if (filters.minPrice) {
       query = query.gte("price_per_day", parseInt(filters.minPrice));
@@ -94,6 +126,9 @@ export default function CarsPage() {
     }
     if (filters.fuelType) {
       query = query.eq("fuel_type", filters.fuelType);
+    }
+    if (filters.seats) {
+      query = query.eq("seats", parseInt(filters.seats));
     }
 
     // Sort
@@ -118,31 +153,40 @@ export default function CarsPage() {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      const { data: catData } = await supabase
-        .from("categories")
-        .select("*")
-        .order("name");
-      if (catData) setCategories(catData as Category[]);
+      const [catRes, locRes] = await Promise.all([
+        supabase.from("categories").select("*").order("name"),
+        supabase.from("locations").select("*").order("name"),
+      ]);
+
+      if (catRes.data) setCategories(catRes.data as Category[]);
+      if (locRes.data) setLocations(locRes.data as Location[]);
       fetchCars();
     };
 
     fetchInitialData();
   }, [fetchCars]);
 
+  const updateURL = useCallback(
+    (newFilters: Partial<FilterState>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      });
+      router.push(`/cars?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams]
+  );
+
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
+    updateURL(newFilters);
   };
 
   const clearFilters = () => {
-    setFilters({
-      search: "",
-      category: null,
-      minPrice: "",
-      maxPrice: "",
-      transmission: null,
-      fuelType: null,
-      sort: "newest",
-    });
+    router.push("/cars", { scroll: false });
   };
 
   const toggleSave = (id: string) => {
@@ -155,9 +199,8 @@ export default function CarsPage() {
   };
 
   const handleReport = (id: string) => {
-    // In a real app, this would open a modal or send an API request
     alert(
-      `Vehicle ${id} has been reported. Our team will review it. Thank you!`,
+      `Vehicle ${id} has been reported. Our team will review it. Thank you!`
     );
   };
 
@@ -166,18 +209,18 @@ export default function CarsPage() {
       <main className="pt-32 pb-24">
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Desktop Sidebar */}
             <div className="hidden lg:block w-80 shrink-0">
               <div className="sticky top-32">
                 <FilterSidebar
                   categories={categories}
+                  locations={locations}
+                  currentFilters={filters}
                   onFilterChange={handleFilterChange}
                   onClear={clearFilters}
                 />
               </div>
             </div>
 
-            {/* Mobile Filter Button and Sort */}
             <div className="flex flex-col gap-6 flex-1">
               <div className="flex items-center justify-between bg-white dark:bg-neutral-surface p-4 rounded-2xl border border-neutral-border shadow-sm">
                 <button
@@ -198,7 +241,6 @@ export default function CarsPage() {
                 </div>
               </div>
 
-              {/* Grid */}
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-32">
                   <Loader2 className="w-12 h-12 text-secondary-main animate-spin mb-4" />
@@ -237,12 +279,11 @@ export default function CarsPage() {
                 </div>
               )}
 
-              {/* Stats */}
               {!loading && cars.length > 0 && (
                 <div className="mt-8 text-center">
                   <p className="text-sm font-medium text-neutral-text-secondary">
                     Showing{" "}
-                    <span className="text-primary-main dark:text-white font-bold">
+                    <span className="text-primary-main dark:text-primary-main font-bold">
                       {cars.length}
                     </span>{" "}
                     vehicles available for you.
@@ -254,10 +295,11 @@ export default function CarsPage() {
         </div>
       </main>
 
-      {/* Mobile Drawer */}
       <div className="lg:hidden">
         <FilterSidebar
           categories={categories}
+          locations={locations}
+          currentFilters={filters}
           onFilterChange={handleFilterChange}
           onClear={clearFilters}
           isOpen={isFilterOpen}
@@ -274,5 +316,19 @@ export default function CarsPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function CarsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-12 h-12 text-secondary-main animate-spin" />
+        </div>
+      }
+    >
+      <CarsContent />
+    </Suspense>
   );
 }

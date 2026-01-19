@@ -1,9 +1,10 @@
+
 "use client";
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Users, Fuel, Settings2, Info, Loader2 } from "lucide-react";
+import { Users, Fuel, Settings2, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface Car {
@@ -78,7 +79,7 @@ const FeaturedCars = () => {
           <button className="text-primary-main font-bold hover:text-secondary-main transition-colors flex items-center gap-2 group whitespace-nowrap">
             View All Vehicles
             <span className="w-8 h-8 rounded-full bg-primary-main/10 flex items-center justify-center group-hover:bg-secondary-main group-hover:text-white transition-all">
-              →
+              <Link href="/cars">→</Link>
             </span>
           </button>
         </div>
@@ -196,13 +197,10 @@ const FeaturedCars = () => {
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/cars/${car.id}`}
-                        className="flex-1 block text-center bg-primary-main text-white py-3.5 rounded-xl font-bold hover:bg-primary-dark transition-all transform active:scale-95"
+                        className="flex-1 block text-center bg-primary-main text-white py-3.5 rounded-full font-bold hover:bg-primary-dark transition-all transform active:scale-95"
                       >
                         Book Now
                       </Link>
-                      <button className="p-3.5 rounded-xl border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors">
-                        <Info size={20} />
-                      </button>
                     </div>
                   </div>
                 </div>

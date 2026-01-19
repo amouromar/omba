@@ -1,3 +1,4 @@
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,7 +53,7 @@ const Hero = () => {
               <ChevronRight size={20} />
             </Link>
             <Link
-              href="#featured"
+              href="/cars"
               className="w-full sm:w-auto bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-white/20 transition-all text-center"
             >
               View All Cars
@@ -69,7 +70,7 @@ const Hero = () => {
                 <p className="text-white font-bold text-sm md:text-lg">
                   100% Insured
                 </p>
-                <p className="text-white/60 text-xs md:text-sm">
+                <p className="hidden md:block text-white/60 md:text-sm">
                   Full protection
                 </p>
               </div>
@@ -79,10 +80,10 @@ const Hero = () => {
                 <Clock className="text-secondary-main" size={24} />
               </div>
               <div className="text-center md:text-left">
-                <p className="text-white font-bold text-sm md:text-lg">
+                <p className="text-white font-bold whitespace-nowrap text-sm md:text-lg">
                   24/7 Support
                 </p>
-                <p className="text-white/60 text-xs md:text-sm">
+                <p className="hidden md:block text-white/60 md:text-sm">
                   Always available
                 </p>
               </div>
@@ -92,10 +93,10 @@ const Hero = () => {
                 <Tag className="text-secondary-main" size={24} />
               </div>
               <div className="text-center md:text-left">
-                <p className="text-white font-bold text-sm md:text-lg">
+                <p className="text-white font-bold whitespace-nowrap text-sm md:text-lg">
                   Best Prices
                 </p>
-                <p className="text-white/60 text-xs md:text-sm">
+                <p className="hidden md:block text-white/60 md:text-sm">
                   No hidden fees
                 </p>
               </div>

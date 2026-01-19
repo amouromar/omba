@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 interface Location {
@@ -18,11 +19,13 @@ interface Category {
 }
 
 const QuickSearch = () => {
+  const router = useRouter();
+  const [selectedLocation, setSelectedLocation] = useState("");
   const [pickUpDate, setPickUpDate] = useState(
-    () => new Date().toISOString().split("T")[0],
+    () => new Date().toISOString().split("T")[0]
   );
   const [returnDate, setReturnDate] = useState(
-    () => new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0],
+    () => new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0]
   );
   const [locations, setLocations] = useState<Location[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -36,13 +39,31 @@ const QuickSearch = () => {
         supabase.from("categories").select("*").order("name"),
       ]);
 
-      if (locRes.data) setLocations(locRes.data);
+      if (locRes.data) {
+        setLocations(locRes.data);
+        if (locRes.data.length > 0) setSelectedLocation(locRes.data[0].name);
+      }
       if (catRes.data) setCategories(catRes.data);
       setLoading(false);
     };
 
     fetchData();
   }, []);
+
+  const handleSearch = (filterOverride?: Record<string, string>) => {
+    const params = new URLSearchParams();
+    if (selectedLocation) params.append("location", selectedLocation);
+    if (pickUpDate) params.append("startDate", pickUpDate);
+    if (returnDate) params.append("endDate", returnDate);
+
+    if (filterOverride) {
+      Object.entries(filterOverride).forEach(([key, value]) => {
+        params.append(key, value);
+      });
+    }
+
+    router.push(`/cars?${params.toString()}`);
+  };
 
   return (
     <div className="container mx-auto px-4 md:px-6 -mt-12 relative z-20">
@@ -55,7 +76,11 @@ const QuickSearch = () => {
               Pick-up Location
             </label>
             <div className="relative">
-              <select className="w-full bg-neutral-surface border border-neutral-border rounded-xl px-4 py-3 text-neutral-text-primary font-medium focus:ring-2 focus:ring-secondary-main outline-none appearance-none transition-all disabled:opacity-50">
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="w-full bg-neutral-surface border border-neutral-border rounded-xl px-4 py-3 text-neutral-text-primary font-medium focus:ring-2 focus:ring-secondary-main outline-none appearance-none transition-all disabled:opacity-50"
+              >
                 {loading ? (
                   <option>Loading locations...</option>
                 ) : (
@@ -64,25 +89,16 @@ const QuickSearch = () => {
                       {locations
                         .filter((loc) => loc.type === "airport")
                         .map((loc) => (
-                          <option key={loc.id} value={loc.id}>
+                          <option key={loc.id} value={loc.name}>
                             {loc.name}
                           </option>
                         ))}
                     </optgroup>
-                    <optgroup label="Bus Stations">
+                    <optgroup label="City / Other">
                       {locations
-                        .filter((loc) => loc.type === "bus_station")
+                        .filter((loc) => loc.type !== "airport")
                         .map((loc) => (
-                          <option key={loc.id} value={loc.id}>
-                            {loc.name}
-                          </option>
-                        ))}
-                    </optgroup>
-                    <optgroup label="Train Stations">
-                      {locations
-                        .filter((loc) => loc.type === "train_station")
-                        .map((loc) => (
-                          <option key={loc.id} value={loc.id}>
+                          <option key={loc.id} value={loc.name}>
                             {loc.name}
                           </option>
                         ))}
@@ -124,7 +140,10 @@ const QuickSearch = () => {
           </div>
 
           {/* Search Button */}
-          <button className="bg-primary-main text-white h-[52px] rounded-xl font-bold text-lg hover:bg-primary-dark transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10">
+          <button
+            onClick={() => handleSearch()}
+            className="bg-primary-main text-white h-[52px] rounded-xl font-bold text-lg hover:bg-primary-dark transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10"
+          >
             <Search size={22} />
             Search Cars
           </button>
@@ -143,6 +162,7 @@ const QuickSearch = () => {
             categories.map((cat) => (
               <button
                 key={cat.id}
+                onClick={() => handleSearch({ category: cat.id })}
                 className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap"
               >
                 {cat.name}
@@ -151,10 +171,16 @@ const QuickSearch = () => {
           )}
           {!loading && (
             <>
-              <button className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap">
+              <button
+                onClick={() => handleSearch({ transmission: "Manual" })}
+                className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap"
+              >
                 Manual
               </button>
-              <button className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap">
+              <button
+                onClick={() => handleSearch({ transmission: "Automatic" })}
+                className="text-xs font-semibold px-3 py-1.5 rounded-full border border-neutral-border text-neutral-text-secondary hover:border-secondary-main hover:text-secondary-main transition-colors whitespace-nowrap"
+              >
                 Automatic
               </button>
             </>
