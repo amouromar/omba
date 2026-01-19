@@ -93,7 +93,7 @@ function CarsContent() {
       endDate: searchParams.get("endDate") || "",
       sort: searchParams.get("sort") || "newest",
     }),
-    [searchParams]
+    [searchParams],
   );
 
   const fetchCars = useCallback(async () => {
@@ -106,7 +106,7 @@ function CarsContent() {
     // Apply filters
     if (filters.search) {
       query = query.or(
-        `make.ilike.%${filters.search}%,model.ilike.%${filters.search}%`
+        `make.ilike.%${filters.search}%,model.ilike.%${filters.search}%`,
       );
     }
     if (filters.category) {
@@ -178,7 +178,7 @@ function CarsContent() {
       });
       router.push(`/cars?${params.toString()}`, { scroll: false });
     },
-    [router, searchParams]
+    [router, searchParams],
   );
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
@@ -200,7 +200,7 @@ function CarsContent() {
 
   const handleReport = (id: string) => {
     alert(
-      `Vehicle ${id} has been reported. Our team will review it. Thank you!`
+      `Vehicle ${id} has been reported. Our team will review it. Thank you!`,
     );
   };
 

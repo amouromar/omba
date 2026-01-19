@@ -31,7 +31,7 @@ interface FilterSidebarProps {
     endDate: string;
   };
   onFilterChange: (
-    filters: Partial<FilterSidebarProps["currentFilters"]>
+    filters: Partial<FilterSidebarProps["currentFilters"]>,
   ) => void;
   onClear: () => void;
   isOpen?: boolean;

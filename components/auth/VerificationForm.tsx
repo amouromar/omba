@@ -108,9 +108,13 @@ export const VerificationForm = ({
       if (updateError) throw updateError;
 
       router.push("/dashboard?verified_pending=true");
-    } catch (err: any) {
+    } catch (err) {
       console.error("Verification Error:", err);
-      setError(err.message || "Failed to submit verification request");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to submit verification request",
+      );
     } finally {
       setLoading(false);
     }

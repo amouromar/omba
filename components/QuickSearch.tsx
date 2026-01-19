@@ -22,10 +22,10 @@ const QuickSearch = () => {
   const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState("");
   const [pickUpDate, setPickUpDate] = useState(
-    () => new Date().toISOString().split("T")[0]
+    () => new Date().toISOString().split("T")[0],
   );
   const [returnDate, setReturnDate] = useState(
-    () => new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0]
+    () => new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0],
   );
   const [locations, setLocations] = useState<Location[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
