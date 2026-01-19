@@ -7,7 +7,7 @@ import InfoSections from "@/components/InfoSections";
 import Footer from "@/components/Footer";
 
 export const metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL("https://omba-silk.vercel.app/"),
   title: "OMBA Car Rental | Premium Car Hire Dar es Salaam & Tanzania",
   description:
     "Book premium SUVs, 4x4s, and economy cars with OMBA. Reliable airport pickups in Dar es Salaam, Zanzibar, and Arusha. Best prices, no hidden fees.",
@@ -30,13 +30,13 @@ export default function Home() {
     image: "https://omba-rental.com/logo.png",
     "@id": "https://omba-rental.com",
     url: "https://omba-rental.com",
-    telephone: "+255700000000",
+    telephone: "+255759626308",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Samora Avenue",
-      addressLocality: "Dar es Salaam",
-      addressRegion: "Dar es Salaam",
-      postalCode: "11101",
+      streetAddress: "Kihonda",
+      addressLocality: "Morogoro",
+      addressRegion: "Morogoro",
+      postalCode: "00000",
       addressCountry: "TZ",
     },
     geo: {

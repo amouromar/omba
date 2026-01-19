@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL("https://omba-silk.vercel.app/"),
   title: "OMBA Car Rental | Tanzania",
   description:
     "Premium car rental services in Dar es Salaam and across Tanzania.",
