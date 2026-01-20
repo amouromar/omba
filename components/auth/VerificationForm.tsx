@@ -85,11 +85,7 @@ export const VerificationForm = ({
 
     const { data, error } = await supabase.storage
       .from("user-documents")
-      .upload(fileName, file, {
-        headers: {
-          Authorization: `Bearer ${testToken}`,
-        },
-      });
+      .upload(fileName, file);
 
     console.log("📊 [Storage Upload] Response data:", data);
     console.log("📊 [Storage Upload] Response error:", error);
@@ -183,6 +179,13 @@ export const VerificationForm = ({
       if (updateError) {
         console.error("❌ [Database Error]", updateError);
         throw updateError;
+      }
+
+      if (!data || data.length === 0) {
+        console.error(
+          "⚠️ [Database] No rows updated. Profile might not exist or RLS blocked the update.",
+        );
+        throw new Error("Failed to update profile. Please try again.");
       }
 
       console.log("✅ [Success] Profile updated successfully");

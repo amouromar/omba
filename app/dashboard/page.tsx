@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getUserProfile } from "@/lib/users";
 import { AlertCircle, CheckCircle2, Clock, ShieldAlert } from "lucide-react";
 import { Profile } from "@/types";
-import { VerificationForm } from "@/components/auth/VerificationForm";
+import { VerificationStatus } from "@/components/auth/VerificationStatus";
 
 export default async function DashboardPage() {
   const profile = (await getUserProfile()) as Profile | null;
@@ -66,31 +66,8 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        {/* 2. Unverified State - Show caution and form */}
-        {!isVerified && (
-          <div className="space-y-6">
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-              <div className="bg-amber-500/20 p-4 rounded-full">
-                <ShieldAlert className="w-8 h-8 text-amber-500" />
-              </div>
-              <div className="flex-1 text-center md:text-left space-y-2">
-                <h3 className="text-xl font-bold text-amber-600">
-                  Verification Required
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  Your account is currently unverified.{" "}
-                  <strong>You will not be able to book cars</strong> until your
-                  identity is confirmed. Please complete the form below.
-                </p>
-              </div>
-            </div>
-
-            <section className="bg-background border rounded-2xl p-6 md:p-8">
-              <h3 className="text-xl font-bold mb-6">Complete Verification</h3>
-              <VerificationForm initialData={profile} />
-            </section>
-          </div>
-        )}
+        {/* 2. Verification Section - Dynamic based on status */}
+        <VerificationStatus profile={profile} />
 
         {/* Data summary - Show for all authenticated users */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

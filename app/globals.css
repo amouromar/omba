@@ -5,6 +5,23 @@
     cursor: pointer;
   }
 }
+@font-face {
+  font-family: "DM Sans";
+  src: url("/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf")
+    format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/fonts/DM_Sans/DMSans-Italic-VariableFont_opsz,wght.ttf")
+    format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 @theme {
   /* Colors - OMBA Branding (Dark Blue + Orange) */
@@ -23,7 +40,7 @@
   --color-neutral-text-disabled: #94a3b8;
 
   /* Font Configuration */
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "DM Sans", "Inter", system-ui, sans-serif;
 
   /* Custom Transitions & Blur */
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

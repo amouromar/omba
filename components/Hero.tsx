@@ -19,7 +19,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-linear-to-r from-primary-dark/80 via-primary-dark/40 to-transparent" />
       </div>*/}
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10 pt-20">
+      <div className="container mx-auto px-4 md:px-6 relative z-10 pt-0">
         <div className="max-w-3xl mx-auto">
           {/* Headline */}
           <h1 className="text-4xl text-center md:text-7xl font-extrabold text-primary-main dark:text-primary-main leading-[1.1] mb-16 animate-fade-in-up delay-100">
@@ -27,12 +27,12 @@ const Hero = () => {
             <span className="text-secondary-main">Tanzania</span>
           </h1>
 
-          <div className="mt-16 mb-8">
+          <div className="mt-12 mb-8">
             <QuickSearch />
           </div>
 
           {/* Trust Badges */}
-          <div className="grid grid-cols-3 gap-4 md:gap-8 mt-16 animate-fade-in-up delay-400">
+          <div className="grid grid-cols-3 gap-4 md:gap-8 mt-8 md:mt-16 animate-fade-in-up delay-400">
             <div className="flex flex-col md:flex-row items-center gap-3">
               <div className="p-2 md:p-3 bg-white/10 rounded-lg">
                 <ShieldCheck className="text-secondary-main" size={24} />

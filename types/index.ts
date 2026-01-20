@@ -14,6 +14,7 @@ export interface Profile {
   is_verified: boolean;
   role: "USER" | "ADMIN";
   updated_at: string | null;
+  created_at: string | null;
 }
 
 export interface Car {
