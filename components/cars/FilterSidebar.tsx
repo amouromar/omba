@@ -50,7 +50,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   return (
     <aside
       className={`
-      fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-neutral-surface shadow-2xl transform transition-transform duration-300 lg:relative lg:translate-x-0 lg:shadow-none lg:z-0 lg:h-full lg:rounded-3xl lg:border lg:border-neutral-border dark:lg:border-neutral-border/50
+      fixed inset-y-0 left-0 z-100 w-80 bg-white dark:bg-neutral-surface shadow-2xl transform transition-transform duration-300 lg:relative lg:translate-x-0 lg:shadow-none lg:z-0 lg:h-full lg:rounded-3xl lg:border lg:border-neutral-border dark:lg:border-neutral-border/50
       ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
     `}
     >

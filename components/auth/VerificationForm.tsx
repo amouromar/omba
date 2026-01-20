@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
+import { useSupabaseClient } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/Button";
 import { Camera, Calendar, CreditCard, Upload } from "lucide-react";
 import { Profile } from "@/types";
@@ -13,15 +13,17 @@ export const VerificationForm = ({
 }: {
   initialData: Profile | null;
 }) => {
-  const { user } = useUser();
   const router = useRouter();
+  const { user } = useUser();
+  const { getToken } = useAuth();
+  const supabase = useSupabaseClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    full_name: initialData?.full_name || user?.fullName || "",
+    full_name: initialData?.full_name || "",
     phone_number: initialData?.phone_number || "",
-    email: initialData?.email || user?.primaryEmailAddress?.emailAddress || "",
+    email: initialData?.email || "",
     national_id_number: initialData?.national_id_number || "",
     driver_license_number: initialData?.driver_license_number || "",
     location: initialData?.location || "",
@@ -48,18 +50,61 @@ export const VerificationForm = ({
   };
 
   const uploadFile = async (file: File, path: string) => {
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${user?.id}/${path}-${Math.random()}.${fileExt}`;
-    const { error } = await supabase.storage
-      .from("user-documents")
-      .upload(fileName, file);
+    if (!user) throw new Error("User not authenticated");
 
-    if (error) throw error;
+    console.log("📁 [Storage Upload] Starting upload for:", path);
+    console.log("👤 [Storage Upload] User ID:", user.id);
+    console.log("📄 [Storage Upload] File:", file.name, "Size:", file.size);
+
+    // Check if we can get a token before attempting upload
+    const testToken = await getToken({ template: "supabase" });
+    console.log("🔑 [Storage Upload] JWT Token available:", !!testToken);
+    if (testToken) {
+      console.log(
+        "🔍 [Storage Upload] Token preview:",
+        testToken.substring(0, 50) + "...",
+      );
+      try {
+        const payload = JSON.parse(atob(testToken.split(".")[1]));
+        console.log("👤 [Storage Upload] Token Payload:", payload);
+        console.log("🆔 [Storage Upload] Token sub:", payload.sub);
+        console.log("🆔 [Storage Upload] User ID:", user.id);
+        console.log("🔍 [Storage Upload] Match?", payload.sub === user.id);
+      } catch (e) {
+        console.error("❌ [Storage Upload] Failed to decode token:", e);
+      }
+    } else {
+      console.error("⚠️ [Storage Upload] NO TOKEN FOUND!");
+    }
+
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${user.id}/${path}-${Math.random()}.${fileExt}`;
+
+    console.log("🗂️ [Storage Upload] Full path:", fileName);
+    console.log("🪣 [Storage Upload] Bucket: user-documents");
+
+    const { data, error } = await supabase.storage
+      .from("user-documents")
+      .upload(fileName, file, {
+        headers: {
+          Authorization: `Bearer ${testToken}`,
+        },
+      });
+
+    console.log("📊 [Storage Upload] Response data:", data);
+    console.log("📊 [Storage Upload] Response error:", error);
+
+    if (error) {
+      console.error("❌ [Storage Upload] Upload failed:", error);
+      throw error;
+    }
 
     // Get public URL
     const { data: urlData } = supabase.storage
       .from("user-documents")
       .getPublicUrl(fileName);
+
+    console.log("🔗 [Storage Upload] Public URL:", urlData.publicUrl);
     return urlData.publicUrl;
   };
 
@@ -68,48 +113,82 @@ export const VerificationForm = ({
     setLoading(true);
     setError(null);
 
+    console.log("📋 [Verification Form] Form submission started");
+    console.log("👤 [User Info] Clerk User:", user);
+    console.log("🆔 [User Info] Clerk User ID:", user?.id);
+
+    if (!user) {
+      console.error("❌ [Auth] No user found - not signed in");
+      setError("You must be signed in to submit verification");
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log("📸 [Files] Uploading files...");
       let national_id_photo_url = initialData?.national_id_photo_url;
       let driver_license_photo_url = initialData?.driver_license_photo_url;
       let selfie_url = initialData?.selfie_url;
 
       if (files.national_id) {
+        console.log("📤 [Upload] Uploading national ID...");
         national_id_photo_url = await uploadFile(
           files.national_id,
           "national-id",
         );
+        console.log("✅ [Upload] National ID uploaded:", national_id_photo_url);
       }
       if (files.driver_license) {
+        console.log("📤 [Upload] Uploading driver license...");
         driver_license_photo_url = await uploadFile(
           files.driver_license,
           "driver-license",
         );
+        console.log(
+          "✅ [Upload] Driver license uploaded:",
+          driver_license_photo_url,
+        );
       }
       if (files.selfie) {
+        console.log("📤 [Upload] Uploading selfie...");
         selfie_url = await uploadFile(files.selfie, "selfie");
+        console.log("✅ [Upload] Selfie uploaded:", selfie_url);
       }
 
-      const { error: updateError } = await supabase
+      const updateData = {
+        full_name: formData.full_name,
+        phone_number: formData.phone_number,
+        national_id_number: formData.national_id_number,
+        driver_license_number: formData.driver_license_number,
+        location: formData.location,
+        house_number: formData.house_number,
+        national_id_photo_url,
+        driver_license_photo_url,
+        selfie_url,
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log("💾 [Database] Updating profile with data:", updateData);
+      console.log("🔍 [Database] Filtering by clerk_id:", user.id);
+
+      const { data, error: updateError } = await supabase
         .from("profiles")
-        .update({
-          full_name: formData.full_name,
-          phone_number: formData.phone_number,
-          national_id_number: formData.national_id_number,
-          driver_license_number: formData.driver_license_number,
-          location: formData.location,
-          house_number: formData.house_number,
-          national_id_photo_url,
-          driver_license_photo_url,
-          selfie_url,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("clerk_id", user?.id);
+        .update(updateData)
+        .eq("clerk_id", user.id)
+        .select();
 
-      if (updateError) throw updateError;
+      console.log("📊 [Database] Update response data:", data);
+      console.log("📊 [Database] Update response error:", updateError);
 
+      if (updateError) {
+        console.error("❌ [Database Error]", updateError);
+        throw updateError;
+      }
+
+      console.log("✅ [Success] Profile updated successfully");
       router.push("/dashboard?verified_pending=true");
     } catch (err) {
-      console.error("Verification Error:", err);
+      console.error("❌ [Verification Error]", err);
       setError(
         err instanceof Error
           ? err.message
@@ -164,9 +243,11 @@ export const VerificationForm = ({
           </label>
           <input
             type="email"
-            readOnly
-            className="w-full p-3 rounded-lg border bg-muted cursor-not-allowed"
+            className="w-full p-3 rounded-lg border bg-background"
             value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
           />
         </div>
         <div className="space-y-2">

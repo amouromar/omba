@@ -58,19 +58,19 @@ const Footer = () => {
             </h4>
             <ul className="space-y-4 text-white/70">
               {[
-                "Browse Cars",
-                "Our Services",
-                "Booking Guide",
-                "Contact Us",
-                "FAQs",
+                { label: "Browse Cars", href: "/cars" },
+                { label: "Our Services", href: "/#services" },
+                { label: "Booking Guide", href: "/#how-it-works" },
+                { label: "Contact Us", href: "/#contact" },
+                { label: "FAQs", href: "/#faqs" },
               ].map((item) => (
-                <li key={item}>
+                <li key={item.label}>
                   <Link
-                    href="#"
+                    href={item.href}
                     className="hover:text-secondary-main transition-colors flex items-center gap-2 group text-sm"
                   >
                     <span className="w-1 h-1 rounded-full bg-secondary-main scale-0 group-hover:scale-100 transition-transform" />
-                    {item}
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -78,7 +78,7 @@ const Footer = () => {
           </div>
 
           {/* Contact Info */}
-          <div>
+          <div id="contact">
             <h4 className="text-lg font-bold mb-8 flex items-center gap-2">
               <span className="w-8 h-[2px] bg-secondary-main" /> Contact Us
             </h4>
@@ -91,11 +91,15 @@ const Footer = () => {
                   <p className="text-xs text-white/40 font-bold uppercase tracking-widest mb-1">
                     Office
                   </p>
-                  <p className="text-sm text-white/80">
-                    Samora Avenue, OH Tower
+                  <Link
+                    href="https://maps.app.goo.gl/tn1CNHGKebiEiEfJ8"
+                    target="_blank"
+                    className="text-sm text-white/80"
+                  >
+                    Mazimbu
                     <br />
-                    Dar es Salaam, Tanzania
-                  </p>
+                    Morogoro, Tanzania
+                  </Link>
                 </div>
               </li>
               <li className="flex items-start gap-4">
@@ -106,21 +110,26 @@ const Footer = () => {
                   <p className="text-xs text-white/40 font-bold uppercase tracking-widest mb-1">
                     Hotline
                   </p>
-                  <p className="text-sm text-white/80">+255 700 000 000</p>
+                  <Link
+                    href="tel:+255759626308"
+                    className="text-sm text-white/80"
+                  >
+                    +255 759 626 308
+                  </Link>
                 </div>
               </li>
             </ul>
           </div>
 
           {/* Newsletter / CTA */}
-          <div className="bg-white/5 p-8 rounded-3xl border border-white/10">
+          <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
             <h4 className="text-xl font-bold mb-4">Book via WhatsApp</h4>
             <p className="text-white/60 text-sm mb-6 leading-relaxed">
               Need a quick quote? Talk to our travel experts directly on
               WhatsApp.
             </p>
             <Link
-              href="https://wa.me/255700000000"
+              href="https://wa.me/+255759626308"
               className="bg-[#25D366] text-white w-full py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-[#128C7E] transition-all"
             >
               <MessageCircle size={24} />
@@ -132,8 +141,8 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-white/40 text-xs text-center md:text-left">
-            © {new Date().getFullYear()} OMBA Car Rental (AfriDrive). All rights
-            reserved. <br className="md:hidden" />
+            © {new Date().getFullYear()} OMBA Car Rental (made by Amour Omar).
+            All rights reserved. <br className="md:hidden" />
             <Link href="#" className="hover:text-white transition-colors">
               Terms of Service
             </Link>{" "}

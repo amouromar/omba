@@ -24,15 +24,15 @@ export const UserList = ({ initialUsers }: { initialUsers: Profile[] }) => {
     const { error } = await supabase
       .from("profiles")
       .update({ is_verified: !currentStatus })
-      .eq("clerk_id", userId);
+      .eq("id", userId);
 
     if (!error) {
       setUsers(
         users.map((u) =>
-          u.clerk_id === userId ? { ...u, is_verified: !currentStatus } : u,
+          u.id === userId ? { ...u, is_verified: !currentStatus } : u,
         ),
       );
-      if (selectedUser?.clerk_id === userId) {
+      if (selectedUser?.id === userId) {
         setSelectedUser({ ...selectedUser, is_verified: !currentStatus });
       }
     }
@@ -67,10 +67,10 @@ export const UserList = ({ initialUsers }: { initialUsers: Profile[] }) => {
         <div className="space-y-2 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
           {filteredUsers.map((user) => (
             <button
-              key={user.clerk_id}
+              key={user.id}
               onClick={() => setSelectedUser(user)}
               className={`w-full text-left p-4 rounded-xl border transition-all ${
-                selectedUser?.clerk_id === user.clerk_id
+                selectedUser?.id === user.id
                   ? "border-primary-main bg-primary-main/5"
                   : "hover:bg-muted/50"
               }`}
@@ -129,19 +129,16 @@ export const UserList = ({ initialUsers }: { initialUsers: Profile[] }) => {
               </div>
               <button
                 onClick={() =>
-                  toggleVerification(
-                    selectedUser.clerk_id,
-                    selectedUser.is_verified,
-                  )
+                  toggleVerification(selectedUser.id!, selectedUser.is_verified)
                 }
-                disabled={loading === selectedUser.clerk_id}
+                disabled={loading === selectedUser.id}
                 className={`px-6 py-2 rounded-xl font-bold transition-all ${
                   selectedUser.is_verified
                     ? "bg-red-500/10 text-red-600 hover:bg-red-500/20"
                     : "bg-green-500 text-white hover:bg-green-600"
                 }`}
               >
-                {loading === selectedUser.clerk_id
+                {loading === selectedUser.id
                   ? "Wait..."
                   : selectedUser.is_verified
                     ? "Unverify Account"

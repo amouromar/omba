@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Phone, User, LayoutDashboard } from "lucide-react";
+import { Menu, X, MessageCircle, LogIn } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,7 +43,7 @@ const Navbar = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-100 transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 dark:bg-primary-dark/80 backdrop-blur-md shadow-lg py-2"
+          ? "bg-white/80 dark:bg-neutral-surface backdrop-blur-md shadow-lg py-2"
           : "bg-transparent py-4"
       }`}
     >
@@ -50,7 +51,7 @@ const Navbar = () => {
         <nav className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="relative w-10 h-10 md:w-12 md:h-12">
+            <div className="relative w-32 h-12 md:w-32 md:h-12">
               <Image
                 src="/logo.svg"
                 alt="OMBA Logo"
@@ -59,13 +60,6 @@ const Navbar = () => {
                 priority
               />
             </div>
-            {/* <span
-              className={`text-xl md:text-2xl font-bold tracking-tight transition-colors ${
-                scrolled ? "text-primary-main dark:text-white" : "text-white dark:text-primary-main"
-              }`}
-            >
-              OMBA
-            </span> */}
           </Link>
 
           {/* Desktop Navigation */}
@@ -76,7 +70,7 @@ const Navbar = () => {
                 href={link.href}
                 className={`text-sm font-medium transition-colors hover:text-secondary-main ${
                   scrolled
-                    ? "text-neutral-text-primary dark:text-white/90"
+                    ? "text-neutral-text-primary"
                     : "text-white/90 dark:text-primary-main"
                 }`}
               >
@@ -87,60 +81,55 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="tel:+255"
-              className={`flex items-center gap-2 text-sm font-semibold transition-colors ${
-                scrolled
-                  ? "text-neutral-text-primary dark:text-white"
-                  : "text-white dark:text-primary-main"
-              }`}
-            >
-              <Phone size={16} className="text-secondary-main" />
-              <span>+255 700 000 000</span>
-            </Link>
-
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button
-                  className={`p-2 rounded-full border transition-colors hover:border-primary-main ${
+            {isSignedIn ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className={`px-4 py-2 rounded-full border transition-colors hover:border-primary-main ${
                     scrolled
-                      ? "border-primary-main dark:border-neutral-border text-primary-main dark:text-white"
+                      ? "border-primary-main dark:border-neutral-border text-primary-main"
                       : "border-white/20 dark:border-neutral-border text-white dark:text-primary-main"
                   }`}
                 >
-                  <User size={20} />
-                </button>
-              </SignInButton>
-            </SignedOut>
-
-            <SignedIn>
-              <Link
-                href="/dashboard"
-                className={`p-2 rounded-full border transition-colors hover:border-primary-main ${
-                  scrolled
-                    ? "border-primary-main dark:border-neutral-border text-primary-main dark:text-white"
-                    : "border-white/20 dark:border-neutral-border text-white dark:text-primary-main"
-                }`}
-                title="Dashboard"
-              >
-                <LayoutDashboard size={20} />
-              </Link>
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: "w-10 h-10",
-                  },
-                }}
-              />
-            </SignedIn>
+                  Dashboard
+                </Link>
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10",
+                    },
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className={`px-4 py-2 rounded-full border transition-colors hover:border-primary-main flex items-center gap-2 ${
+                    scrolled
+                      ? "border-primary-main dark:border-neutral-border text-primary-main"
+                      : "border-white/20 dark:border-neutral-border text-white dark:text-primary-main"
+                  }`}
+                >
+                  <LogIn size={18} />
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="bg-primary-main text-white px-4 py-2 rounded-full font-bold hover:bg-primary-dark transition-all"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
 
             <ThemeToggle />
             <Link
-              href="/cars"
-              className="bg-secondary-main text-white px-6 py-2.5 rounded-lg font-bold shadow-lg hover:bg-secondary-dark transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              href="https://wa.me/+255759626308"
+              className="bg-[#25D366] text-white px-4 py-2 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#12695f] transition-all"
             >
-              Book Now
+              <MessageCircle size={20} className="text-white" />
+              <span>Chat</span>
             </Link>
           </div>
 
@@ -156,7 +145,9 @@ const Navbar = () => {
               <Menu
                 size={28}
                 className={
-                  scrolled ? "text-primary-main dark:text-white" : "text-white"
+                  scrolled
+                    ? "text-primary-main dark:text-neutral-text-primary"
+                    : "text-white dark:text-primary-main"
                 }
               />
             )}
@@ -166,57 +157,71 @@ const Navbar = () => {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed h-screen  inset-0 z-105 bg-primary-dark/98 backdrop-blur-xl transition-transform duration-300 md:hidden ${
+        className={`fixed h-screen  inset-0 z-105 bg-primary-main dark:bg-primary-dark backdrop-blur-xl transition-transform duration-300 md:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex flex-col items-center justify-center h-full gap-8 p-6 text-center">
+        <div className="flex flex-col items-start h-full gap-8 pt-20 mx-12 text-center">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="text-2xl font-semibold text-white hover:text-secondary-main transition-colors"
+              className="text-2xl font-semibold text-black dark:text-white hover:text-secondary-main transition-colors"
             >
               {link.name}
             </Link>
           ))}
-          <Link
-            href="/cars"
-            onClick={() => setIsOpen(false)}
-            className="w-full max-w-xs bg-secondary-main text-white py-4 rounded-xl text-xl font-bold shadow-xl"
-          >
-            Find Your Car
-          </Link>
 
           <div className="flex flex-col w-full max-w-xs gap-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="w-full py-3 rounded-xl border border-white/20 text-white font-semibold">
+            {isSignedIn ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full bg-secondary-main text-white py-4 rounded-full text-md font-bold shadow-xl"
+                >
+                  Dashboard
+                </Link>
+                <div className="flex justify-center">
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-12 h-12",
+                      },
+                    }}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full py-3 rounded-full border border-white/20 text-white font-semibold flex items-center justify-center gap-2"
+                >
+                  <LogIn size={18} />
                   Sign In
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Link
-                href="/dashboard"
-                onClick={() => setIsOpen(false)}
-                className="w-full py-3 rounded-xl border border-white/20 text-white font-semibold flex items-center justify-center gap-2"
-              >
-                <LayoutDashboard size={18} />
-                Dashboard
-              </Link>
-            </SignedIn>
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full bg-secondary-main text-white py-4 rounded-full text-md font-bold shadow-xl"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="absolute bottom-8 flex w-full items-center gap-48">
             <ThemeToggle />
             <Link
-              href="tel:+255"
-              className="flex items-center gap-3 text-white/80 text-lg"
+              href="https://wa.me/+255759626308"
+              className="bg-[#25D366] text-white px-4 py-2 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#12695f] transition-all"
             >
-              <Phone size={20} className="text-secondary-main" />
-              <span>+255 700 000 000</span>
+              <MessageCircle size={20} className="text-white" />
+              <span>Chat</span>
             </Link>
           </div>
         </div>

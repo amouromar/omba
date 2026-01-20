@@ -71,7 +71,10 @@ const InfoSections = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-24 bg-white dark:bg-neutral-surface">
+      <section
+        id="how-it-works"
+        className="py-24 bg-white dark:bg-neutral-surface"
+      >
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-black text-primary-main mb-4">
@@ -259,6 +262,47 @@ const InfoSections = () => {
                 <div className="absolute bottom-1/3 right-1/4 w-3 h-3 rounded-full bg-primary-main shadow-lg" />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs */}
+      <section id="faqs" className="py-24 bg-neutral-surface">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-primary-main mb-4">
+              Frequently Asked{" "}
+              <span className="text-secondary-main">Questions</span>
+            </h2>
+            <p className="text-neutral-text-secondary text-lg max-w-2xl mx-auto">
+              Got questions? We&apos;ve got answers. If you don&apos;t see your
+              question here, reach out to us.
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-6">
+            {[
+              {
+                q: "How do I book a car?",
+                a: "Simply browse our cars, select your dates, and follow the booking process or contact us via WhatsApp.",
+              },
+              {
+                q: "What documents do I need?",
+                a: "You'll need a valid driver's license, an ID or passport, and a credit card or mobile money for payment.",
+              },
+              {
+                q: "Is insurance included?",
+                a: "Yes, all our rentals come with comprehensive insurance coverage for your peace of mind.",
+              },
+            ].map((faq, i) => (
+              <div
+                key={i}
+                className="bg-white p-6 rounded-2xl border border-neutral-border"
+              >
+                <h4 className="font-bold text-primary-main mb-2">{faq.q}</h4>
+                <p className="text-neutral-text-secondary text-sm">{faq.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

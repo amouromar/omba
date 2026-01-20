@@ -1,22 +1,58 @@
-import { supabase } from "./supabase";
-import { auth } from "@clerk/nextjs/server";
+import { Profile } from "@/types";
+import { currentUser } from "@clerk/nextjs/server";
+import { createServerSupabaseClient } from "./supabase-clerk";
 
-export async function getUserProfile() {
-  const { userId } = await auth();
-  if (!userId) return null;
+/**
+ * Get the current user's profile from Supabase.
+ * If the profile doesn't exist, create it with basic info from Clerk.
+ */
+export async function getUserProfile(): Promise<Profile | null> {
+  const user = await currentUser();
+  if (!user) return null;
 
-  const { data, error } = await supabase
+  const supabase = await createServerSupabaseClient();
+
+  // Try to get existing profile
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("*")
-    .eq("clerk_id", userId)
+    .eq("clerk_id", user.id)
     .single();
 
-  if (error) {
-    console.error("Error fetching user profile:", error);
-    return null;
+  // If profile exists, return it
+  if (profile && !error) {
+    return profile as Profile;
   }
 
-  return data;
+  // If profile doesn't exist, create it
+  if (error?.code === "PGRST116") {
+    const newProfile = {
+      clerk_id: user.id,
+      email: user.emailAddresses[0]?.emailAddress || null,
+      full_name:
+        `${user.firstName || ""} ${user.lastName || ""}`.trim() || null,
+      phone_number: user.phoneNumbers[0]?.phoneNumber || null,
+      avatar_url: user.imageUrl || null,
+      is_verified: false,
+      role: "USER" as const,
+    };
+
+    const { data: createdProfile, error: createError } = await supabase
+      .from("profiles")
+      .insert(newProfile)
+      .select()
+      .single();
+
+    if (createError) {
+      console.error("Error creating profile:", createError);
+      return null;
+    }
+
+    return createdProfile as Profile;
+  }
+
+  console.error("Error fetching profile:", error);
+  return null;
 }
 
 export async function isAdmin() {

@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { Calendar, MapPin, ShieldCheck, CreditCard, Info } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  ShieldCheck,
+  CreditCard,
+  Info,
+  AlertCircle,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface Location {
@@ -33,6 +40,7 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
   const [returnDate, setReturnDate] = useState("");
 
   const [isBooking, setIsBooking] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -63,8 +71,10 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
   const grandTotal = totalPrice + insurance;
 
   const handleBooking = async () => {
+    setError("");
+
     if (!pickUpDate || !returnDate) {
-      alert("Please select pick-up and return dates.");
+      setError("Please select pick-up and return dates.");
       return;
     }
 
@@ -94,12 +104,12 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Booking failed: " + (data.error || "Unknown error"));
+        setError("Booking failed! " + (data.error || "Unknown error"));
         setIsBooking(false);
       }
     } catch (error) {
       console.error("Booking Error:", error);
-      alert("An error occurred. Please try again.");
+      setError("An error occurred. Please try again.");
       setIsBooking(false);
     }
   };
@@ -239,6 +249,17 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({
         )}
       </button>
 
+      {error && (
+        <div className="mt-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-xl flex items-start gap-2">
+          <AlertCircle
+            size={16}
+            className="text-red-600 dark:text-red-400 mt-0.5 shrink-0"
+          />
+          <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+            {error}
+          </p>
+        </div>
+      )}
       <p className="text-center text-xs text-neutral-text-disabled mt-4 font-medium">
         You won&apos;t be charged yet
       </p>

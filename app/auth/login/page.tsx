@@ -1,8 +1,21 @@
+import { SignIn } from "@clerk/nextjs";
+
 export default function LoginPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold">Login</h1>
-      <p className="mt-4">Please sign in to your account.</p>
+    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-primary-main/10 to-secondary-main/10 pt-20">
+      <div className="w-full max-w-md p-8">
+        <SignIn
+          appearance={{
+            elements: {
+              rootBox: "mx-auto",
+              card: "shadow-2xl rounded-2xl",
+            },
+          }}
+          routing="path"
+          path="/auth/login"
+          signUpUrl="/auth/signup"
+        />
+      </div>
     </div>
   );
 }

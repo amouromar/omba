@@ -67,7 +67,7 @@ const QuickSearch = () => {
 
   return (
     <div className="container mx-auto px-4 md:px-6 -mt-12 relative z-20">
-      <div className="bg-white dark:bg-neutral-surface rounded-2xl shadow-2xl p-6 md:p-8">
+      <div className="bg-white dark:bg-neutral-surface rounded-2xl border-t shadow-2xl p-6 md:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
           {/* Location */}
           <div className="space-y-2">
@@ -79,7 +79,7 @@ const QuickSearch = () => {
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="w-full bg-neutral-surface border border-neutral-border rounded-xl px-4 py-3 text-neutral-text-primary font-medium focus:ring-2 focus:ring-secondary-main outline-none appearance-none transition-all disabled:opacity-50"
+                className="w-full bg-neutral-surface border border-neutral-border rounded-xl pl-2 pr-8 py-3 text-neutral-text-secondary text-sm font-medium focus:ring-2 focus:ring-secondary-main outline-none appearance-none transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <option>Loading locations...</option>
@@ -89,7 +89,11 @@ const QuickSearch = () => {
                       {locations
                         .filter((loc) => loc.type === "airport")
                         .map((loc) => (
-                          <option key={loc.id} value={loc.name}>
+                          <option
+                            key={loc.id}
+                            value={loc.name}
+                            className="text-neutral-text-secondary"
+                          >
                             {loc.name}
                           </option>
                         ))}
@@ -98,7 +102,11 @@ const QuickSearch = () => {
                       {locations
                         .filter((loc) => loc.type !== "airport")
                         .map((loc) => (
-                          <option key={loc.id} value={loc.name}>
+                          <option
+                            key={loc.id}
+                            value={loc.name}
+                            className="text-neutral-text-secondary"
+                          >
                             {loc.name}
                           </option>
                         ))}
@@ -120,7 +128,7 @@ const QuickSearch = () => {
             </label>
             <input
               type="date"
-              className="w-full bg-neutral-surface border border-neutral-border rounded-xl px-4 py-3 text-neutral-text-primary font-medium focus:ring-2 focus:ring-secondary-main outline-none transition-all"
+              className="w-full bg-neutral-surface border border-neutral-border rounded-xl pl-2 pr-8 py-3 text-neutral-text-secondary text-sm font-medium focus:ring-2 focus:ring-secondary-main outline-none transition-all"
               value={pickUpDate}
               onChange={(e) => setPickUpDate(e.target.value)}
             />
@@ -133,7 +141,7 @@ const QuickSearch = () => {
             </label>
             <input
               type="date"
-              className="w-full bg-neutral-surface border border-neutral-border rounded-xl px-4 py-3 text-neutral-text-primary font-medium focus:ring-2 focus:ring-secondary-main outline-none transition-all"
+              className="w-full bg-neutral-surface border border-neutral-border rounded-xl pl-2 pr-8 py-3 text-neutral-text-secondary text-sm font-medium focus:ring-2 focus:ring-secondary-main outline-none transition-all"
               value={returnDate}
               onChange={(e) => setReturnDate(e.target.value)}
             />
@@ -142,10 +150,10 @@ const QuickSearch = () => {
           {/* Search Button */}
           <button
             onClick={() => handleSearch()}
-            className="bg-primary-main text-white h-[52px] rounded-xl font-bold text-lg hover:bg-primary-dark transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10"
+            className="bg-primary-main text-white h-[52px] rounded-full font-bold text-lg hover:bg-primary-dark transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10"
           >
-            <Search size={22} />
-            Search Cars
+            <Search size={24} />
+            Search
           </button>
         </div>
 

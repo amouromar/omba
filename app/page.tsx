@@ -1,7 +1,6 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import QuickSearch from "@/components/QuickSearch";
 import FeaturedCars from "@/components/FeaturedCars";
 import InfoSections from "@/components/InfoSections";
 import Footer from "@/components/Footer";
@@ -76,7 +75,6 @@ export default function Home() {
         <Hero />
 
         <div className="relative">
-          <QuickSearch />
           <FeaturedCars />
         </div>
 

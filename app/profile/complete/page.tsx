@@ -2,16 +2,13 @@ import React from "react";
 import { VerificationForm } from "@/components/auth/VerificationForm";
 import { getUserProfile } from "@/lib/users";
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { Profile } from "@/types";
 
 export default async function ProfileCompletePage() {
-  const { userId } = await auth();
-  if (!userId) {
-    redirect("/");
-  }
+  const profile = (await getUserProfile()) as Profile | null;
 
-  const profile = await getUserProfile();
-
+  // Since Clerk is removed, we'll allow anyone to access this for now
+  // or redirect if they are already verified
   if (profile?.is_verified) {
     redirect("/dashboard");
   }

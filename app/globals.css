@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+* {
+  button {
+    cursor: pointer;
+  }
+}
+
 @theme {
   /* Colors - OMBA Branding (Dark Blue + Orange) */
   --color-primary-main: #1e3a8a; /* Dark Blue */

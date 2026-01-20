@@ -1,9 +1,36 @@
 import Link from "next/link";
 import { getUserProfile } from "@/lib/users";
-import { AlertCircle, CheckCircle2, Clock, ArrowRight } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ShieldAlert } from "lucide-react";
+import { Profile } from "@/types";
+import { VerificationForm } from "@/components/auth/VerificationForm";
 
 export default async function DashboardPage() {
-  const profile = await getUserProfile();
+  const profile = (await getUserProfile()) as Profile | null;
+
+  // 1. Not Signed In State
+  if (!profile) {
+    return (
+      <div className="container mx-auto px-4 pt-48 pb-12 flex flex-col items-center justify-center text-center space-y-6">
+        <div className="bg-primary-main/10 p-6 rounded-full">
+          <ShieldAlert className="w-12 h-12 text-primary-main" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold">Access Restricted</h1>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Please sign in to view your account dashboard, manage bookings, and
+            access your personal data.
+          </p>
+        </div>
+        <Link
+          href="/auth/login"
+          className="bg-primary-main text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-primary-dark transition-all"
+        >
+          Sign In to Your Account
+        </Link>
+      </div>
+    );
+  }
+
   const isVerified = profile?.is_verified;
   const isPending = profile?.national_id_number && !isVerified;
 
@@ -19,19 +46,19 @@ export default async function DashboardPage() {
               Manage your bookings and account settings.
             </p>
           </div>
-          <div className="bg-background border rounded-lg p-1 flex items-center gap-2">
+          <div className="bg-background border rounded-full p-1 flex items-center gap-2">
             {isVerified ? (
-              <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-600 rounded-md text-sm font-medium">
+              <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-sm font-medium">
                 <CheckCircle2 size={16} />
                 Verified Account
               </div>
             ) : isPending ? (
-              <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/10 text-yellow-600 rounded-md text-sm font-medium">
+              <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/10 text-yellow-600 rounded-full text-sm font-medium">
                 <Clock size={16} />
                 Verification Pending
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-600 rounded-md text-sm font-medium">
+              <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-600 rounded-full text-sm font-medium">
                 <AlertCircle size={16} />
                 Verification Required
               </div>
@@ -39,41 +66,50 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        {!isVerified && !isPending && (
-          <div className="bg-primary-main/10 border border-primary-main/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-            <div className="bg-primary-main/20 p-4 rounded-full">
-              <AlertCircle className="w-8 h-8 text-primary-main" />
+        {/* 2. Unverified State - Show caution and form */}
+        {!isVerified && (
+          <div className="space-y-6">
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
+              <div className="bg-amber-500/20 p-4 rounded-full">
+                <ShieldAlert className="w-8 h-8 text-amber-500" />
+              </div>
+              <div className="flex-1 text-center md:text-left space-y-2">
+                <h3 className="text-xl font-bold text-amber-600">
+                  Verification Required
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Your account is currently unverified.{" "}
+                  <strong>You will not be able to book cars</strong> until your
+                  identity is confirmed. Please complete the form below.
+                </p>
+              </div>
             </div>
-            <div className="flex-1 text-center md:text-left space-y-2">
-              <h3 className="text-xl font-bold">Complete Your Profile</h3>
-              <p className="text-muted-foreground text-sm">
-                To start renting cars and making payments, we need to verify
-                your identity. Please upload your documents for manual review.
-              </p>
-            </div>
-            <Link
-              href="/profile/complete"
-              className="bg-primary-main text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-primary-dark transition-all flex items-center gap-2"
-            >
-              Get Verified <ArrowRight size={18} />
-            </Link>
+
+            <section className="bg-background border rounded-2xl p-6 md:p-8">
+              <h3 className="text-xl font-bold mb-6">Complete Verification</h3>
+              <VerificationForm initialData={profile} />
+            </section>
           </div>
         )}
 
+        {/* Data summary - Show for all authenticated users */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard title="Total Bookings" value="0" />
           <StatCard title="Pending Payments" value="0" />
           <StatCard title="Active Rentals" value="0" />
         </div>
 
-        <section className="bg-background border rounded-2xl overflow-hidden">
-          <div className="p-6 border-b bg-muted/30">
-            <h3 className="font-bold">Recent Activities</h3>
-          </div>
-          <div className="p-12 text-center text-muted-foreground">
-            <p>No recent activities found.</p>
-          </div>
-        </section>
+        {/* 3. Verified State - Additional content or specific UI */}
+        {isVerified && (
+          <section className="bg-background border rounded-2xl overflow-hidden">
+            <div className="p-6 border-b bg-muted/30">
+              <h3 className="font-bold">Recent Activities</h3>
+            </div>
+            <div className="p-12 text-center text-muted-foreground">
+              <p>No recent activities found.</p>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

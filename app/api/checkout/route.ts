@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { isVerified } from "@/lib/users";
-import { auth } from "@clerk/nextjs/server";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -20,10 +19,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const userId = "mock-user-id"; // Mocking since Clerk is removed
 
     const verified = await isVerified();
     if (!verified) {
@@ -82,7 +78,7 @@ export async function POST(request: Request) {
     const { error } = await supabase.from("bookings").insert([
       {
         car_id: carId,
-        user_id: userId, // Added clerk_id/user_id for tracking
+        user_id: userId, // Tracking user ID
         start_date: startDate,
         end_date: endDate,
         total_price: totalAmount,

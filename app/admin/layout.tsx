@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdmin, getUserProfile } from "@/lib/users";
-import { UserButton } from "@clerk/nextjs";
+import { Profile } from "@/types";
 
 export default async function AdminLayout({
   children,
@@ -53,11 +53,10 @@ export default async function AdminLayout({
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground font-medium">
-                {profile?.full_name || "Admin"}
+                {(profile as Profile | null)?.full_name || "Admin User"}
               </span>
               <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
             </div>
-            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </nav>
