@@ -140,7 +140,10 @@ const Navbar = () => {
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <ChevronRightIcon size={28} className="absolute top-0 right-4 text-neutral-text-primary dark:text-neutral-text-secondary" />
+              <ChevronRightIcon
+                size={28}
+                className="absolute top-0 right-4 text-neutral-text-primary dark:text-neutral-text-secondary"
+              />
             ) : (
               <Menu
                 size={28}
