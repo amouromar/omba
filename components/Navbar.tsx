@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, MessageCircle, LogIn } from "lucide-react";
+import { Menu, MessageCircle, LogIn, ChevronRightIcon } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { UserButton, useAuth } from "@clerk/nextjs";
 
@@ -140,7 +140,7 @@ const Navbar = () => {
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X size={28} className="absolute top-0 right-4 text-white" />
+              <ChevronRightIcon size={28} className="absolute top-0 right-4 text-neutral-text-primary dark:text-neutral-text-secondary" />
             ) : (
               <Menu
                 size={28}
@@ -157,23 +157,34 @@ const Navbar = () => {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed h-screen  inset-0 z-105 bg-primary-main dark:bg-primary-dark backdrop-blur-xl transition-transform duration-300 md:hidden ${
+        className={`fixed h-screen  inset-0 z-105 bg-neutral-surface dark:bg-neutral-surface backdrop-blur-xl transition-transform duration-200 md:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex flex-col items-start h-full gap-8 pt-20 mx-12 text-center">
+        <div className="flex flex-col items-start h-full gap-2 pt-20 mx-12 text-center">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="text-2xl font-semibold text-black dark:text-white hover:text-secondary-main transition-colors"
+              className="text-2xl font-normal text-neutral-text-primary dark:text-neutral-text-secondary hover:text-secondary-main transition-colors"
             >
               {link.name}
             </Link>
           ))}
 
-          <div className="flex flex-col w-full max-w-xs gap-4">
+          <div className="flex flex-row-reverse gap-4 items-center justify-between w-full">
+            <ThemeToggle />
+            <Link
+              href="https://wa.me/+255759626308"
+              className="bg-[#25D366] text-white px-4 py-2 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#12695f] transition-all"
+            >
+              <MessageCircle size={20} className="text-white" />
+              <span>Chat</span>
+            </Link>
+          </div>
+
+          <div className="flex flex-row w-full max-w-xs gap-4 mt-[calc(100vh-28rem)]">
             {isSignedIn ? (
               <>
                 <Link
@@ -198,7 +209,7 @@ const Navbar = () => {
                 <Link
                   href="/auth/login"
                   onClick={() => setIsOpen(false)}
-                  className="w-full py-3 rounded-full border border-white/20 text-white font-semibold flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-full border-2 border-neutral-border text-neutral-text-primary font-semibold flex items-center justify-center gap-2"
                 >
                   <LogIn size={18} />
                   Sign In
@@ -212,17 +223,6 @@ const Navbar = () => {
                 </Link>
               </>
             )}
-          </div>
-
-          <div className="absolute bottom-8 flex w-full items-center gap-48">
-            <ThemeToggle />
-            <Link
-              href="https://wa.me/+255759626308"
-              className="bg-[#25D366] text-white px-4 py-2 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#12695f] transition-all"
-            >
-              <MessageCircle size={20} className="text-white" />
-              <span>Chat</span>
-            </Link>
           </div>
         </div>
       </div>
