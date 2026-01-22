@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, CheckCircle2 } from "lucide-react";
 import { Profile } from "@/types";
 import { DocumentPreview } from "./DocumentPreview";
 import { VerificationForm } from "./VerificationForm";
@@ -23,22 +23,38 @@ export const VerificationStatus = ({ profile }: VerificationStatusProps) => {
   // If verified, we don't necessarily need to show the form or preview anymore,
   // but if the user wants to see their documents, they can.
   // For now, we only care about the unverified/pending states.
-  if (isVerified) return null;
+  // if (isVerified) return null; // Removed early return to show documents
 
   return (
     <div className="space-y-6">
-      <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-        <div className="bg-amber-500/20 p-4 rounded-full">
-          <ShieldAlert className="w-8 h-8 text-amber-500" />
+      <div
+        className={`border rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 ${isVerified ? "bg-green-500/10 border-green-500/20" : "bg-amber-500/10 border-amber-500/20"}`}
+      >
+        <div
+          className={`p-4 rounded-full ${isVerified ? "bg-green-500/20" : "bg-amber-500/20"}`}
+        >
+          {isVerified ? (
+            <CheckCircle2 className="w-8 h-8 text-green-600" />
+          ) : (
+            <ShieldAlert className="w-8 h-8 text-amber-500" />
+          )}
         </div>
         <div className="flex-1 text-center md:text-left space-y-2">
-          <h3 className="text-xl font-bold text-amber-600">
-            {hasDocuments ? "Verification Pending" : "Verification Required"}
+          <h3
+            className={`text-xl font-bold ${isVerified ? "text-green-700" : "text-amber-600"}`}
+          >
+            {isVerified
+              ? "Verified Account"
+              : hasDocuments
+                ? "Verification Pending"
+                : "Verification Required"}
           </h3>
           <p className="text-muted-foreground text-sm">
-            {hasDocuments
-              ? "Your documents are being reviewed. You can update them if needed."
-              : "Your account is currently unverified. You will not be able to book cars until your identity is confirmed."}
+            {isVerified
+              ? "Your identity has been verified. You can now book cars without any restrictions."
+              : hasDocuments
+                ? "Your documents are being reviewed. You can update them if needed."
+                : "Your account is currently unverified. You will not be able to book cars until your identity is confirmed."}
           </p>
         </div>
       </div>

@@ -50,20 +50,20 @@ const Navbar = () => {
       <div className="container mx-auto px-4 md:px-6">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="relative w-32 h-12 md:w-32 md:h-12">
+          <Link href="/" className="flex flex-1 items-center gap-2">
+            <div className="relative w-12 h-12 bg-white rounded-xl">
               <Image
-                src="/logo.svg"
+                src="/logo.png"
                 alt="OMBA Logo"
                 fill
                 className="object-cover"
-                priority
               />
             </div>
+            <span className="text-2xl font-normal tracking-tighter">OMBA</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex flex-1 items-center gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -80,7 +80,7 @@ const Navbar = () => {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex flex-1 items-center gap-4">
             {isSignedIn ? (
               <>
                 <Link
@@ -135,7 +135,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden p-2 z-110 relative"
+            className="md:hidden flex items-center p-2 z-110 relative"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >

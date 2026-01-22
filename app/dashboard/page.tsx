@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { getUserProfile } from "@/lib/users";
+import { createServerSupabaseClient } from "@/lib/supabase-clerk";
 import { AlertCircle, CheckCircle2, Clock, ShieldAlert } from "lucide-react";
-import { Profile } from "@/types";
-import { VerificationStatus } from "@/components/auth/VerificationStatus";
+import { Profile, BookingWithCar } from "@/types";
+import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 
 export default async function DashboardPage() {
   const profile = (await getUserProfile()) as Profile | null;
@@ -30,6 +31,15 @@ export default async function DashboardPage() {
       </div>
     );
   }
+
+  const supabase = await createServerSupabaseClient();
+  const { data: bookingsData } = await supabase
+    .from("bookings")
+    .select("*, cars(*)")
+    .eq("user_id", profile.clerk_id)
+    .order("created_at", { ascending: false });
+
+  const bookings = (bookingsData as unknown as BookingWithCar[]) || [];
 
   const isVerified = profile?.is_verified;
   const isPending = profile?.national_id_number && !isVerified;
@@ -66,35 +76,8 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        {/* 2. Verification Section - Dynamic based on status */}
-        <VerificationStatus profile={profile} />
-
-        {/* Data summary - Show for all authenticated users */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard title="Total Bookings" value="0" />
-          <StatCard title="Pending Payments" value="0" />
-          <StatCard title="Active Rentals" value="0" />
-        </div>
-
-        {/* 3. Verified State - Additional content or specific UI */}
-        {isVerified && (
-          <section className="bg-background border rounded-2xl overflow-hidden">
-            <div className="p-6 border-b bg-muted/30">
-              <h3 className="font-bold">Recent Activities</h3>
-            </div>
-            <div className="p-12 text-center text-muted-foreground">
-              <p>No recent activities found.</p>
-            </div>
-          </section>
-        )}
+        <DashboardTabs profile={profile} bookings={bookings} />
       </div>
     </div>
   );
 }
-
-const StatCard = ({ title, value }: { title: string; value: string }) => (
-  <div className="bg-background border rounded-2xl p-6 space-y-1">
-    <p className="text-sm text-muted-foreground font-medium">{title}</p>
-    <p className="text-3xl font-bold">{value}</p>
-  </div>
-);

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { isVerified } from "@/lib/users";
@@ -19,7 +20,11 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function POST(request: Request) {
   try {
-    const userId = "mock-user-id"; // Mocking since Clerk is removed
+    const user = await currentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = user.id;
 
     const verified = await isVerified();
     if (!verified) {

@@ -28,8 +28,20 @@ export interface Car {
 
 export interface Booking {
   id: string;
-  carId: string;
-  date: string;
-  user_id?: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  car_id: string;
+  user_id: string;
+  start_date: string; // ISO date string
+  end_date: string; // ISO date string
+  total_price: number;
+  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+  created_at: string;
+}
+
+export interface BookingWithCar extends Booking {
+  cars: {
+    name: string;
+    image: string;
+    make: string;
+    model: string;
+  };
 }
